@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.ui)
+    implementation("com.caverock:androidsvg-aar:1.4")
     testImplementation(libs.junit)
     testImplementation("org.robolectric:robolectric:4.17")
     testImplementation("org.mockito:mockito-core:5.20.0")
