@@ -18,7 +18,9 @@
 DIPLAY_AUTH_ASSETS_DIR=/absolute/path/to/runtime-assets ./gradlew :mobile:assembleStandaloneDebug :mobile:lintDebug
 ```
 
-测试包显示为 **Deepal CarPlay 测试**，包名 `com.shihab.diplay.hudtest`，使用本机 Android debug keystore 签名，可与原版并存。以后更新测试包须继续使用同一签名文件。首次使用需要在测试包内选择手机并配置连接方式。
+应用显示为 **Deepal**，版本 `0.2.13-deepal`（versionCode 33）。包名继续使用 `com.shihab.diplay.hudtest`，签名沿用此前本机 Android debug keystore，能够覆盖之前的首页测试包并保留设置，也可与官方版并存。首次使用需要在测试包内选择手机并配置连接方式。
+
+应用图标和 CarPlay 默认返回车机图标统一使用用户提供的 1024 × 1024 黑底深蓝标志。默认 CarPlay 名称为 **深蓝汽车**；此前保存的默认名称 `BYD` 同样显示为新名称，自定义的其他名称保留。
 
 认证文件、签名文件、构建输出和参考截图只保存在本机，不提交到 Git。
 
