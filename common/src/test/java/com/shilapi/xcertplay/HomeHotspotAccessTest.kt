@@ -33,8 +33,9 @@ import org.robolectric.annotation.Implements
 import org.robolectric.util.ReflectionHelpers
 
 /**
- * What Home says when DiPlay could not turn the car hotspot on at start-up for lack of the
+ * The Deepal Settings permission route when DiPlay could not turn the car hotspot on for lack of the
  * "Modify system settings" access, and what happens once the driver allows it.
+ * The authored Deepal Home keeps its original cards; permission controls live in Settings.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29], qualifiers = "en-w1000dp-h700dp-land",
@@ -96,9 +97,10 @@ class HomeHotspotAccessTest {
     private fun tap(screen: DiPlayActivity, text: Int) = descendants(screen.window.decorView)
         .filterIsInstance<TextView>().single { it.text == screen.getString(text) }.performClick()
 
-    @Test fun offBydUnitsHomeAsksForTheSystemAccessAndOpensItsScreen() {
+    @Test fun offBydUnitsReachSystemAccessThroughDeepalSettings() {
         val home = openHome().get()
         awaitResult(home, CarHotspotTethering.Result.PERMISSION_REQUIRED)
+        openConnectionSettings(home)
         val shown = texts(home)
         assertTrue(shown.toString(), home.getString(R.string.settings_write_settings_missing) in shown)
         assertTrue(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
@@ -112,7 +114,7 @@ class HomeHotspotAccessTest {
         assertEquals("package:${home.packageName}", opened.dataString)
     }
 
-    @Test fun onABydUnitHomeKeepsTheAdbRoute() {
+    @Test fun onABydUnitDeepalSettingsKeepsTheAdbRoute() {
         shadowOf(context.packageManager).installPackage(PackageInfo().apply {
             packageName = "com.byd.carsettings"
             applicationInfo = ApplicationInfo().apply {
@@ -122,9 +124,9 @@ class HomeHotspotAccessTest {
         })
         val home = openHome().get()
         awaitResult(home, CarHotspotTethering.Result.PERMISSION_REQUIRED)
+        openConnectionSettings(home)
         val shown = texts(home)
-        assertTrue(shown.toString(), home.getString(R.string.hotspot_control_missing) in shown)
-        assertTrue(shown.toString(), home.getString(R.string.open_car_hotspot_settings) in shown)
+        assertTrue(com.shilapi.xcertplay.network.CarHotspotSetup.isBydHeadUnit(home))
         assertFalse(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
     }
 
@@ -146,15 +148,23 @@ class HomeHotspotAccessTest {
         assertFalse(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
     }
 
-    @Test fun returningWithoutTheAccessKeepsAskingForIt() {
+    @Test fun returningWithoutAccessKeepsTheSettingsPermissionRoute() {
         val controller = openHome()
         val home = controller.get()
         awaitResult(home, CarHotspotTethering.Result.PERMISSION_REQUIRED)
         controller.pause().stop().restart().start().resume()
         shadowOf(Looper.getMainLooper()).idle()
         assertEquals(CarHotspotTethering.Result.PERMISSION_REQUIRED, result(home))
+        openConnectionSettings(home)
         assertTrue(texts(home).toString(), home.getString(R.string.settings_write_settings_missing) in texts(home))
         assertEquals(0, PlatformStart.calls.get())
+    }
+
+    private fun openConnectionSettings(home: DiPlayActivity) {
+        descendants(home.window.decorView).single { it.contentDescription == "软件设置" }.performClick()
+        descendants(home.window.decorView).single {
+            it.contentDescription == home.getString(R.string.settings_open_category, home.getString(R.string.connection))
+        }.performClick()
     }
 
     /** The platform's tethering call, which turns the car hotspot on. */

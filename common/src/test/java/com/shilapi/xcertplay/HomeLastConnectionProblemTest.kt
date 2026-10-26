@@ -75,18 +75,22 @@ class HomeLastConnectionProblemTest {
 
     private val time = "[^()（）]*\\d{1,2}:\\d{2}[^()（）]*"
 
-    @Test fun homeSaysWhatTheLastAttemptRanInto() {
+    @Test fun deepalKeepsTheLastAttemptInDiagnostics() {
         fail(ConnectionFailureCause.CHOSEN_IPHONE_NOT_PAIRED)
         val shown = shown(openHome())
         val line = Regex("Last connection attempt \\($time\\): The iPhone chosen in DiPlay is no longer paired with the car")
-        assertEquals(shown.toString(), 1, shown.count(line::matches))
+        assertTrue(LastConnectionProblem.homeLine(context).orEmpty(),
+            line.matches(LastConnectionProblem.homeLine(context).orEmpty()))
+        assertEquals(shown.toString(), 0, shown.count(line::matches))
     }
 
-    @Test @Config(qualifiers = "zh-rTW-w1000dp-h700dp-land") fun homeSaysItInTraditionalChinese() {
+    @Test @Config(qualifiers = "zh-rTW-w1000dp-h700dp-land") fun lastAttemptRemainsLocalizedForDiagnostics() {
         fail(ConnectionFailureCause.CHOSEN_IPHONE_NOT_PAIRED)
         val shown = shown(openHome())
         val line = Regex("上次連線嘗試（$time）：在 DiPlay 選擇的 iPhone 已不再與車機配對")
-        assertEquals(shown.toString(), 1, shown.count(line::matches))
+        assertTrue(LastConnectionProblem.homeLine(context).orEmpty(),
+            line.matches(LastConnectionProblem.homeLine(context).orEmpty()))
+        assertEquals(shown.toString(), 0, shown.count(line::matches))
     }
 
     @Test fun nothingRememberedAddsNothing() {
@@ -94,7 +98,7 @@ class HomeLastConnectionProblemTest {
         assertTrue(shown.toString(), shown.none { it.startsWith("Last connection attempt") })
     }
 
-    @Test fun itHidesWhileCarPlayIsConnectedAndOnceTheProblemIsForgotten() {
+    @Test fun deepalLayoutStaysStableWhileTheDiagnosticRecordCanBeCleared() {
         fail(ConnectionFailureCause.CHOSEN_IPHONE_NOT_PAIRED)
         val home = openHome()
         CarPlayBackgroundSession.active = true
@@ -102,18 +106,20 @@ class HomeLastConnectionProblemTest {
         assertTrue(shown(home).toString(), shown(home).none { it.startsWith("Last connection attempt") })
         CarPlayBackgroundSession.active = false
         refresh(home)
-        assertEquals(shown(home).toString(), 1, shown(home).count { it.startsWith("Last connection attempt") })
+        assertTrue(LastConnectionProblem.load(context) != null)
+        assertEquals(shown(home).toString(), 0, shown(home).count { it.startsWith("Last connection attempt") })
         LastConnectionProblem.clear(context)
         refresh(home)
         assertTrue(shown(home).toString(), shown(home).none { it.startsWith("Last connection attempt") })
     }
 
-    @Test fun withTheCarHotspotOffHomeKeepsItsOneHotspotWarning() {
+    @Test fun deepalKeepsItsHotspotHintAndTheRecordedCause() {
         CarHotspotOffConnectTest.HotspotState.on = false
         fail(ConnectionFailureCause.CAR_HOTSPOT_OFF)
         val home = openHome()
         val shown = shown(home)
-        assertTrue(shown.toString(), home.getString(R.string.msg_car_hotspot_off, "Car 5G") in shown)
+        assertTrue(shown.toString(), "打开车机热点" in shown)
+        assertTrue(LastConnectionProblem.report(context).contains("cause:CAR_HOTSPOT_OFF"))
         assertTrue(shown.toString(), shown.none { it.startsWith("Last connection attempt") })
     }
 

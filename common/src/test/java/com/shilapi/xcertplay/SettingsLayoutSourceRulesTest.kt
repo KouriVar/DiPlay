@@ -14,8 +14,10 @@ class SettingsLayoutSourceRulesTest {
     }
 
     @Test fun sizesAreNotPixelConstants() {
+        // The preserved Figma home uses authored pixel coordinates, outside Settings.
         val pixelConstant = Regex("""\b[A-Z][A-Z0-9_]*_PX\b""")
-        assertEquals(emptyList<String>(), sources.flatMap { hits(it, pixelConstant) })
+        assertEquals(emptyList<String>(), sources.filterNot { it.name == "DeepalHomeView.kt" }
+            .flatMap { hits(it, pixelConstant) })
     }
 
     private fun hits(file: File, pattern: Regex) = file.readLines().withIndex()

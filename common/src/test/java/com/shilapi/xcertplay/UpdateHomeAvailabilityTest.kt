@@ -26,57 +26,77 @@ class UpdateHomeAvailabilityTest {
 
     @After fun clear() = UpdateAvailability.clearAllForTest(application)
 
-    @Test fun cachedUpdateAppearsBelowTheVersionAndOpensTheExistingDownloadFlow() {
+    @Test fun cachedUpdateOpensTheExistingDownloadFlowFromDeepalSettings() {
         val release = release()
         UpdateAvailability.save(application, release)
         val controller = Robolectric.buildActivity(DiPlayActivity::class.java).setup()
         val activity = controller.get()
-        val text = activity.getString(R.string.update_available_home)
-        val update = descendants(activity.window.decorView).filterIsInstance<TextView>()
-            .single { it.text == text }
-
-        assertTrue(update.isClickable)
-        assertTrue(update.isFocusable)
-        assertEquals(DiPlayPalette.DARK.warning, update.currentTextColor)
-        update.performClick()
-
-        assertEquals(SettingsCategory.ABOUT, ReflectionHelpers.getField<SettingsCategory>(activity, "settingsCategory"))
-        assertTrue(descendants(activity.window.decorView).filterIsInstance<TextView>().any {
-            it.text == activity.getString(R.string.update_download)
-        })
-        controller.pause().stop().destroy()
+        try {
+            assertFalse(homeHasUpdateChip(activity))
+            openAboutFromHome(activity)
+            val update = downloadButton(activity)
+            assertTrue(update.isClickable)
+            assertTrue(update.isFocusable)
+            assertEquals(SettingsCategory.ABOUT, ReflectionHelpers.getField<SettingsCategory>(activity, "settingsCategory"))
+            assertEquals(release, ReflectionHelpers.getField<UpdateRelease>(activity, "updateRelease"))
+        } finally {
+            controller.pause().stop().destroy()
+        }
     }
 
     @Config(sdk = [29], qualifiers = "en-w400dp-h900dp-port")
-    @Test fun cachedUpdateKeepsAnArmLengthTargetInCompactHome() {
-        val release = release()
-        UpdateAvailability.save(application, release)
+    @Test fun compactHomeKeepsItsLayoutAndTheUpdateIsAvailableInSettings() {
+        UpdateAvailability.save(application, release())
         val controller = Robolectric.buildActivity(DiPlayActivity::class.java).setup()
         val activity = controller.get()
-        val update = descendants(activity.window.decorView).filterIsInstance<TextView>().single {
+        try {
+            assertFalse(homeHasUpdateChip(activity))
+            openAboutFromHome(activity)
+            val update = downloadButton(activity)
+            // The existing update button retains a 60 dp touch target.
+            assertTrue(update.layoutParams.height >= (48 * activity.resources.displayMetrics.density).toInt())
+            assertTrue(update.isClickable)
+        } finally {
+            controller.pause().stop().destroy()
+        }
+    }
+
+    @Test fun anUpdateFoundInTheBackgroundAppearsInSettingsAfterReturningHome() {
+        val controller = Robolectric.buildActivity(DiPlayActivity::class.java).setup()
+        val activity = controller.get()
+        try {
+            assertFalse(homeHasUpdateChip(activity))
+            controller.pause().stop()
+            UpdateAvailability.save(application, release())
+            controller.start().resume()
+            assertFalse(homeHasUpdateChip(activity))
+            openAboutFromHome(activity)
+            assertTrue(downloadButton(activity).isShown)
+        } finally {
+            controller.pause().stop().destroy()
+        }
+    }
+
+    private fun homeHasUpdateChip(activity: DiPlayActivity) =
+        descendants(activity.window.decorView).filterIsInstance<TextView>().any {
             it.text == activity.getString(R.string.update_available_home)
         }
 
-        assertTrue(update.minHeight >= (48 * activity.resources.displayMetrics.density).toInt())
-        assertTrue(update.isClickable)
-        controller.pause().stop().destroy()
+    private fun openAboutFromHome(activity: DiPlayActivity) {
+        descendants(activity.window.decorView).first {
+            it.contentDescription == "软件设置" ||
+                (it is android.widget.Button && it.text == activity.getString(R.string.settings))
+        }.performClick()
+        descendants(activity.window.decorView).single {
+            it.contentDescription == activity.getString(R.string.settings_open_category,
+                activity.getString(R.string.about))
+        }.performClick()
     }
 
-    @Test fun anUpdateFoundWhileDiPlayWasInTheBackgroundShowsWhenHomeReturns() {
-        val controller = Robolectric.buildActivity(DiPlayActivity::class.java).setup()
-        val activity = controller.get()
-        val text = activity.getString(R.string.update_available_home)
-        fun shown() = descendants(activity.window.decorView).filterIsInstance<TextView>().any { it.text == text }
-        assertFalse(shown())
-
-        // The check after opening finds a release while CarPlay is in front.
-        controller.pause().stop()
-        UpdateAvailability.save(application, release())
-        controller.start().resume()
-
-        assertTrue(shown())
-        controller.pause().stop().destroy()
-    }
+    private fun downloadButton(activity: DiPlayActivity) =
+        descendants(activity.window.decorView).filterIsInstance<TextView>().single {
+            it.text == activity.getString(R.string.update_download)
+        }
 
     private fun release() = UpdateRelease(
         tagName = "v99.0.0",

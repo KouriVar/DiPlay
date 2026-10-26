@@ -2437,6 +2437,11 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
     }
 
     private fun about(content: LinearLayout) {
+        // Deepal keeps its authored home unchanged; cached updates remain available here.
+        if (updateStage == UpdateStage.IDLE) availableUpdate?.let {
+            updateRelease = it
+            updateStage = UpdateStage.AVAILABLE
+        }
         settingsPageTitle(content, getString(R.string.about_diplay), getString(R.string.carplay_at_home_in_your_car))
         section(content, getString(R.string.about_public_preview_prefix, version())) { card ->
             card.addView(label(getString(R.string.an_independent_carplay_receiver_for_android_head_units_wir), 17, TEXT))

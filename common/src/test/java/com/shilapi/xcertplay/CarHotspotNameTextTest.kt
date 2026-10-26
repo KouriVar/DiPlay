@@ -62,18 +62,19 @@ class CarHotspotNameTextTest {
         if (view is ViewGroup) for (index in 0 until view.childCount) yieldAll(descendants(view.getChildAt(index)))
     }
 
-    @Test fun theHomePageDoesNotQuoteAHotspotNameThatWasNeverSaved() {
+    @Test fun deepalHomeKeepsItsFixedHotspotHintBeforeSetup() {
         val home = open()
         val shown = texts(home)
-        assertTrue(shown.toString(), home.getString(R.string.hotspot_details_off) in shown)
+        assertTrue(shown.toString(), "打开车机热点" in shown)
         assertFalse(shown.toString(), home.getString(R.string.msg_car_hotspot_off, "") in shown)
         assertFalse(shown.toString(), shown.any { "“”" in it })
     }
 
-    @Test fun theHomePageNamesASavedHotspotThatIsOff() {
+    @Test fun deepalHomeKeepsItsFixedHintWithoutLosingTheSavedHotspot() {
         saveHotspot("Car 5G")
         val home = open()
-        assertTrue(texts(home).toString(), home.getString(R.string.msg_car_hotspot_off, "Car 5G") in texts(home))
+        assertTrue(texts(home).toString(), "打开车机热点" in texts(home))
+        org.junit.Assert.assertEquals("Car 5G", AirPlayPersistence.loadManualHotspotSsid(home))
     }
 
     @Test fun connectionSetupAsksForTheDetailsUntilTheyAreSaved() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DiPlay</string>
+    <string name="app_name">Deepal</string>
     <string name="language_section_title">言語</string>
     <string name="language_app_language">アプリの言語</string>
     <string name="language_system_default">システムの設定に従う</string>
@@ -196,7 +196,7 @@
     <string name="default_placeholder_icon">標準の仮アイコン</string>
     <string name="diagnostic_report_saved">診断レポートを保存しました</string>
     <string name="diagnostics">診断</string>
-    <string name="diplay">DiPlay</string>
+    <string name="diplay">Deepal</string>
     <string name="discard_changes_and_exit_settings">変更を破棄して設定を終了</string>
     <string name="disconnect">切断</string>
     <string name="discovering_iphone">iPhoneを検索しています</string>
