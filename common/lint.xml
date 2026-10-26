@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- The original Figma home is deliberately unchanged. DiPlayActivity only constructs it
+         on API 28+, and every installable host also requires API 28+. The common library keeps
+         upstream's API 24 minimum so its older-Android settings/transport tests still run. -->
+    <issue id="NewApi">
+        <ignore path="src/main/java/com/shilapi/xcertplay/DeepalHomeView.kt" />
+    </issue>
+</lint>
