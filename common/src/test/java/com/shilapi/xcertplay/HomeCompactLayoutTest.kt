@@ -17,16 +17,16 @@ import org.robolectric.util.ReflectionHelpers
 @Config(sdk = [29])
 class HomeCompactLayoutTest {
     @Config(qualifiers = "en-w900dp-h400dp-land")
-    @Test fun compactLandscapeKeepsWirelessAndUsbInSeparateColumns() {
-        verifyCompactArrangement(landscape = true)
+    @Test fun compactLandscapeKeepsTheDeepalPhonePicker() {
+        verifyCompactArrangement()
     }
 
     @Config(qualifiers = "en-w400dp-h900dp-port")
-    @Test fun compactPortraitStacksWirelessBeforeUsb() {
-        verifyCompactArrangement(landscape = false)
+    @Test fun compactPortraitKeepsTheDeepalPhonePicker() {
+        verifyCompactArrangement()
     }
 
-    private fun verifyCompactArrangement(landscape: Boolean) {
+    private fun verifyCompactArrangement() {
         val controller = Robolectric.buildActivity(DiPlayActivity::class.java).setup()
         val activity = controller.get()
         val root = activity.window.decorView
@@ -40,11 +40,13 @@ class HomeCompactLayoutTest {
         fun text(id: Int) = descendants(root).filterIsInstance<TextView>()
             .single { it.text == activity.getString(id) }
         val connect = text(R.string.connect_phone)
-        val usb = text(R.string.connect_with_usb)
+        val choose = text(R.string.choose_iphone)
         val connectPosition = IntArray(2).also(connect::getLocationOnScreen)
-        val usbPosition = IntArray(2).also(usb::getLocationOnScreen)
-        if (landscape) assertTrue(usbPosition[0] >= connectPosition[0] + connect.width)
-        else assertTrue(usbPosition[1] >= connectPosition[1] + connect.height)
+        val choosePosition = IntArray(2).also(choose::getLocationOnScreen)
+        assertTrue(choosePosition[1] >= connectPosition[1] + connect.height)
+        assertFalse(descendants(root).filterIsInstance<TextView>().any {
+            it.text == activity.getString(R.string.connect_with_usb)
+        })
         assertTrue(text(R.string.car_home).visibility == View.VISIBLE)
         assertFalse(descendants(root).filterIsInstance<TextView>().any {
             it.text == activity.getString(R.string.a_familiar_drive) ||
