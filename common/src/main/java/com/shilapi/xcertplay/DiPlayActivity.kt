@@ -697,7 +697,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         bydAdbControls = null
         adbSwitches.clear()
         adbStatus = null
-        val compact = isCompactLayout && when (page) {
+        val compact = (isCompactLayout || Build.VERSION.SDK_INT < 28) && when (page) {
             "settings" -> !SettingsLayoutPreferences.isActive(this)
             else -> true
         }
@@ -959,7 +959,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
     }
 
     private fun home(content: LinearLayout) {
-        val compact = isCompactLayout
+        val compact = isCompactLayout || Build.VERSION.SDK_INT < 28
         if (compact) {
             val card = card().apply { setPadding(dp(12), dp(10), dp(12), dp(10)) }
             status = label(getString(R.string.ready_when_you_are), 16, TEXT, true).apply {

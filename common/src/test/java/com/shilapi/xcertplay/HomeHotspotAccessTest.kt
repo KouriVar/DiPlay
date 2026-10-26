@@ -126,7 +126,7 @@ class HomeHotspotAccessTest {
         awaitResult(home, CarHotspotTethering.Result.PERMISSION_REQUIRED)
         openConnectionSettings(home)
         val shown = texts(home)
-        assertTrue(com.shilapi.xcertplay.network.CarHotspotSetup.isBydHeadUnit(home))
+        assertTrue(CarHotspotSetup.isBydHeadUnit(home))
         assertFalse(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
     }
 

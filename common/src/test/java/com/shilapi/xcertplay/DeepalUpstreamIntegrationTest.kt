@@ -62,6 +62,22 @@ class DeepalUpstreamIntegrationTest {
         }
     }
 
+    @Config(sdk = [25])
+    @Test fun commonLibraryTestsOnOlderAndroidUseTheCompatibleHome() {
+        val controller = Robolectric.buildActivity(DiPlayActivity::class.java,
+            Intent().putExtra("page", "home")).setup()
+        try {
+            val root = controller.get().window.decorView
+            assertFalse(descendants(root).any { it is DeepalHomeView })
+            assertTrue(descendants(root).filterIsInstance<TextView>().any {
+                it.text == controller.get().getString(R.string.choose_iphone)
+            })
+        } finally {
+            controller.pause().stop().destroy()
+            AppAppearanceRuntime.resetForTest()
+        }
+    }
+
     @Test fun oldDefaultCarNameMigratesButPersonalNamesStayIntact() {
         val context = RuntimeEnvironment.getApplication()
         try {
