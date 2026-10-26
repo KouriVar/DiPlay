@@ -28,4 +28,4 @@ DIPLAY_AUTH_ASSETS_DIR=/absolute/path/to/runtime-assets ./gradlew :mobile:assemb
 
 ## 上游同步（2026-10-26）
 
-合并上游 `main` 至 `9d89633035d1add5b044ba3de5e57dd078bf2511`（2026-10-24）。保留原首页组件、视频、字体、SVG、深蓝图标、应用名称、CarPlay 默认名称及旧 BYD 名称迁移、`.hudtest` 包名和 `-deepal` 后缀。首页继续调用更新后的连接和设置逻辑；设置页保留上游分类导航、搜索及外观功能。Android 7.x/8.0 使用兼容首页，避免调用原首页中要求 Android 9 的接口。
+合并上游 `main` 至 `9d89633035d1add5b044ba3de5e57dd078bf2511`（2026-10-24）。保留原首页组件、视频、字体、SVG、深蓝图标、应用名称、CarPlay 默认名称及旧 BYD 名称迁移、`.hudtest` 包名和 `-deepal` 后缀。首页继续调用更新后的连接和设置逻辑；设置页保留上游分类导航、搜索及外观功能。保留原 Deepal 版本的 Android 9 最低系统要求（minSdk 28），确保原首页字体和播放器实现无需修改。

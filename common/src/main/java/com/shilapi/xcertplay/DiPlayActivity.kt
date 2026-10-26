@@ -697,7 +697,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
         bydAdbControls = null
         adbSwitches.clear()
         adbStatus = null
-        val compact = (isCompactLayout || Build.VERSION.SDK_INT < 28) && when (page) {
+        val compact = isCompactLayout && when (page) {
             "settings" -> !SettingsLayoutPreferences.isActive(this)
             else -> true
         }
