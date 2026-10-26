@@ -18,10 +18,14 @@
 DIPLAY_AUTH_ASSETS_DIR=/absolute/path/to/runtime-assets ./gradlew :mobile:assembleStandaloneDebug :mobile:lintDebug
 ```
 
-应用显示为 **Deepal**，版本 `0.2.13-deepal`（versionCode 33）。包名继续使用 `com.shihab.diplay.hudtest`，签名沿用此前本机 Android debug keystore，能够覆盖之前的首页测试包并保留设置，也可与官方版并存。首次使用需要在测试包内选择手机并配置连接方式。
+应用显示为 **Deepal**，版本 `0.2.21-deepal`（versionCode 40）。包名继续使用 `com.shihab.diplay.hudtest`，签名沿用此前本机 Android debug keystore，能够覆盖之前的首页测试包并保留设置，也可与官方版并存。首次使用需要在测试包内选择手机并配置连接方式。
 
 应用图标和 CarPlay 默认返回车机图标统一使用用户提供的 1024 × 1024 黑底深蓝标志。默认 CarPlay 名称为 **深蓝汽车**；此前保存的默认名称 `BYD` 同样显示为新名称，自定义的其他名称保留。
 
 认证文件、签名文件、构建输出和参考截图只保存在本机，不提交到 Git。
 
 上车测试时退出另一款投屏应用，检查手机选择、无线连接、全屏显示及往返设置页；返回 CarPlay 后确认音乐和触控正常。
+
+## 上游同步（2026-10-26）
+
+合并上游 `main` 至 `9d89633035d1add5b044ba3de5e57dd078bf2511`（2026-10-24）。保留原首页组件、视频、字体、SVG、深蓝图标、应用名称、CarPlay 默认名称及旧 BYD 名称迁移、`.hudtest` 包名和 `-deepal` 后缀。首页继续调用更新后的连接和设置逻辑；设置页保留上游分类导航、搜索及外观功能。Android 7.x/8.0 使用兼容首页，避免调用原首页中要求 Android 9 的接口。
