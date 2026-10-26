@@ -162,7 +162,8 @@ class HomeHotspotAccessTest {
 
     private fun openConnectionSettings(home: DiPlayActivity) {
         descendants(home.window.decorView).single { it.contentDescription == "软件设置" }.performClick()
-        descendants(home.window.decorView).single {
+        // Wide Settings exposes this destination in both the rail and Overview.
+        descendants(home.window.decorView).first {
             it.contentDescription == home.getString(R.string.settings_open_category, home.getString(R.string.connection))
         }.performClick()
     }

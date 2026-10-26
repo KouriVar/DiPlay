@@ -87,7 +87,8 @@ class UpdateHomeAvailabilityTest {
             it.contentDescription == "软件设置" ||
                 (it is android.widget.Button && it.text == activity.getString(R.string.settings))
         }.performClick()
-        descendants(activity.window.decorView).single {
+        // Wide Settings exposes this destination in both the rail and Overview.
+        descendants(activity.window.decorView).first {
             it.contentDescription == activity.getString(R.string.settings_open_category,
                 activity.getString(R.string.about))
         }.performClick()
