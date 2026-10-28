@@ -33,3 +33,9 @@ DIPLAY_AUTH_ASSETS_DIR=/absolute/path/to/runtime-assets ./gradlew :mobile:assemb
 上游官方首页新增的热点提示、最近失败提示和更新徽标不替换原设计。热点权限继续由「软件设置 → 连接」提供，最近失败记录保留在诊断报告，缓存的可用更新在「软件设置 → 关于」显示下载按钮。相关测试按这些实际入口验证，不跳过测试。
 
 可安装应用仍要求 Android 9；`common` 库沿用上游的 API 24 声明以运行旧系统回归测试。首页创建入口明确限制 API 28+，旧测试环境使用兼容首页；仅对原首页文件声明这一 API lint 边界，原文件保持不变。
+
+## 上游同步（2026-10-28）
+
+同步上游 `main` 至 `a2dc2e70b3ff24e9e18e56db71cde776b30a4eec`（2026-10-27），新增 87 个提交。包含触控队列、日志性能、诊断脱敏、外部 Intent 处理及同一局域网网卡配置等更新。发行版仍为 `v0.2.21`，Deepal 的包名、版本后缀、最低安装要求及原首页和素材保持不变；新增韩语资源沿用 Deepal 名称。
+
+装车机使用 `:mobile:assembleStandaloneDebug`，并显式提供自己的 `DIPLAY_AUTH_ASSETS_DIR`。CI 的 source-only debug 构建不带运行时认证文件，不作为独立 CarPlay 装车包。覆盖安装需要沿用原签名。
